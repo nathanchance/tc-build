@@ -2,7 +2,7 @@ name: Build test
 on:
   push:
     branches:
-      - main
+      - personal
 jobs:
   build-test:
     runs-on: ubuntu-latest
