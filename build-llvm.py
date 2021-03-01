@@ -354,6 +354,18 @@ def parse_parameters(root_folder):
 
                         """),
                         action="store_true")
+    parser.add_argument("--update-binutils",
+                        help=textwrap.dedent("""\
+                        Update the binutils repo before building
+
+                        """),
+                        action="store_true")
+    parser.add_argument("--update-llvm",
+                        help=textwrap.dedent("""\
+                        Update the LLVM repo before building
+
+                        """),
+                        action="store_true")
     clone_options.add_argument("--use-good-revision",
                                help=textwrap.dedent("""\
                         By default, the script updates LLVM to the latest tip of tree revision, which may at times be
@@ -554,7 +566,7 @@ def fetch_llvm_binutils(args, dirs):
     llvm_path = dirs.llvm_folder
     llvm_posix = llvm_path.as_posix()
     if llvm_path.is_dir():
-        if args.update:
+        if args.update or args.update_llvm:
             utils.print_header("Updating LLVM")
 
             # Make sure repo is up to date before trying to see if checkout is possible
@@ -620,7 +632,7 @@ def fetch_llvm_binutils(args, dirs):
     # We need it for the LLVMgold plugin, which can be used for LTO with ld.gold,
     # which at the time of writing this, is how the Google Pixel 3 kernel is built
     # and linked.
-    utils.fetch_binutils(dirs.root_folder, args.update)
+    utils.fetch_binutils(dirs.root_folder, args.update or args.update_binutils)
 
 
 def cleanup(build_folder, incremental):
