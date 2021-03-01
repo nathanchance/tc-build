@@ -149,9 +149,9 @@ def invoke_configure(build_folder, install_folder, root_folder, target,
     :param host_arch: Host architecture to optimize for
     """
     configure = [
-        root_folder.joinpath(utils.current_binutils(), "configure").as_posix(),
-        'CC=gcc', 'CXX=g++', '--disable-compressed-debug-sections',
-        '--disable-gdb', '--disable-werror', '--enable-deterministic-archives',
+        root_folder.joinpath("binutils", "configure").as_posix(), 'CC=gcc',
+        'CXX=g++', '--disable-compressed-debug-sections', '--disable-gdb',
+        '--disable-werror', '--enable-deterministic-archives',
         '--enable-new-dtags', '--enable-plugins', '--enable-threads',
         '--prefix=%s' % install_folder.as_posix(), '--quiet',
         '--with-system-zlib'
@@ -257,7 +257,7 @@ def main():
     if args.targets is not None:
         targets = args.targets
 
-    utils.download_binutils(root_folder)
+    utils.fetch_binutils(root_folder)
 
     build_targets(build_folder, install_folder, root_folder,
                   create_targets(targets), args.march)

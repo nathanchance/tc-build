@@ -2,4 +2,5 @@
 /venv/
 *.pyc
 llvm-project/
+binutils/
 build/

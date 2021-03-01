@@ -17,61 +17,26 @@ def create_gitignore(folder):
         gitignore.write("*")
 
 
-def current_binutils():
+def fetch_binutils(folder, update=True):
     """
-    Simple getter for current stable binutils release
-    :return: The current stable release of binutils
-    """
-    return "binutils-2.36.1"
-
-
-def download_binutils(folder):
-    """
-    Downloads the latest stable version of binutils
+    Clones/updates the binutils repo
     :param folder: Directory to download binutils to
     """
-    binutils = current_binutils()
-    binutils_folder = folder.joinpath(binutils)
-    if not binutils_folder.is_dir():
-        # Remove any previous copies of binutils
-        for entity in folder.glob('binutils-*'):
-            if entity.is_dir():
-                shutil.rmtree(entity.as_posix())
-            else:
-                entity.unlink()
-
-        # Download the tarball
-        binutils_tarball = folder.joinpath(binutils + ".tar.xz")
+    binutils_folder = folder.joinpath("binutils")
+    if binutils_folder.is_dir():
+        if update:
+            print_header("Updating binutils")
+            subprocess.run(
+                ["git", "-C",
+                 binutils_folder.as_posix(), "pull", "--rebase"],
+                check=True)
+    else:
+        print_header("Downloading binutils")
         subprocess.run([
-            "curl", "-LSs", "-o",
-            binutils_tarball.as_posix(),
-            "https://ftp.gnu.org/gnu/binutils/" + binutils_tarball.name
+            "git", "clone", "git://sourceware.org/git/binutils-gdb.git",
+            binutils_folder.as_posix()
         ],
                        check=True)
-        verify_binutils_checksum(binutils_tarball)
-        # Extract the tarball then remove it
-        subprocess.run(["tar", "-xJf", binutils_tarball.name],
-                       check=True,
-                       cwd=folder.as_posix())
-        create_gitignore(binutils_folder)
-        binutils_tarball.unlink()
-
-
-def verify_binutils_checksum(file):
-    # Check the SHA512 checksum of the downloaded file with a known good one
-    # The sha512.sum file from <sourceware.org> ships the SHA512 checksums
-    # Link: https://sourceware.org/pub/binutils/releases/sha512.sum
-    file_hash = hashlib.sha512()
-    with file.open("rb") as f:
-        while True:
-            data = f.read(131072)
-            if not data:
-                break
-            file_hash.update(data)
-    good_hash = "cc24590bcead10b90763386b6f96bb027d7594c659c2d95174a6352e8b98465a50ec3e4088d0da038428abe059bbc4ae5f37b269f31a40fc048072c8a234f4e9"
-    if file_hash.hexdigest() != good_hash:
-        raise RuntimeError(
-            "binutils: SHA512 checksum does not match known good one!")
 
 
 def print_header(string):
