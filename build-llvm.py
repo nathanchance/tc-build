@@ -1056,7 +1056,7 @@ def invoke_cmake(args, dirs, env_vars, stage):
     utils.print_header("Configuring LLVM %s" % header_string)
 
     show_command(args, cmake)
-    subprocess.run(cmake, check=True, cwd=cwd)
+    subprocess.run(cmake, check=True, cwd=cwd, stdout=subprocess.DEVNULL)
 
 
 def print_install_info(install_folder):
