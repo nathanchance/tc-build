@@ -92,6 +92,12 @@ def parse_parameters(root_folder):
                         host processor.
                         """,
                         type=str)
+    parser.add_argument("-u",
+                        "--update",
+                        help="""
+                        Update the binutils repos before building.
+                        """,
+                        action="store_true")
     return parser.parse_args()
 
 
@@ -257,7 +263,7 @@ def main():
     if args.targets is not None:
         targets = args.targets
 
-    utils.fetch_binutils(root_folder)
+    utils.fetch_binutils(root_folder, args.update)
 
     build_targets(build_folder, install_folder, root_folder,
                   create_targets(targets), args.march)
