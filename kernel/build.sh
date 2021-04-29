@@ -99,11 +99,11 @@ function setup_krnl_src() {
         cd "${KERNEL_SRC}" || exit 1
     else
         LINUX=linux-5.12
-        LINUX_TARBALL=${KRNL}/${LINUX}.tar.xz
+        LINUX_TARBALL=${KRNL}/${LINUX}.tar.gz
 
         # If we don't have the source tarball, download and verify it
         if [[ ! -f ${LINUX_TARBALL} ]]; then
-            curl -LSso "${LINUX_TARBALL}" https://cdn.kernel.org/pub/linux/kernel/v5.x/"${LINUX_TARBALL##*/}"
+            curl -LSso "${LINUX_TARBALL}" https://git.kernel.org/torvalds/t/"${LINUX_TARBALL##*/}"
 
             (
                 cd "${LINUX_TARBALL%/*}" || exit 1
@@ -120,7 +120,7 @@ function setup_krnl_src() {
             [[ ${SRC_FILE##*/} = *.patch ]] && PATCH_FILES+=("${SRC_FILE}")
         done
         [[ -n "${PATCHES[*]}" ]] && rm -rf ${LINUX}
-        [[ -d ${LINUX} ]] || { tar -xf "${LINUX_TARBALL}" || exit ${?}; }
+        [[ -d ${LINUX} ]] || { tar -xzf "${LINUX_TARBALL}" || exit ${?}; }
         cd ${LINUX} || exit 1
         for PATCH_FILE in "${PATCH_FILES[@]}"; do
             apply_patch "${PATCH_FILE}"
