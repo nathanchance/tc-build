@@ -397,7 +397,7 @@ for matrix_item in KERNEL_MATRIX:
         *[opt for elem in hyperfine_descriptions for opt in ('--command-name', f"LLVM ({elem})")],
         '--export-markdown', Path(RESULTS, f"{matrix_item['arch']}-{matrix_item['config']}.md"),
         '--prepare', f"rm -fr {BASE_MAKE_VARS['O']}",
-        '--runs', '10',
+        '--runs', '10' if 'defconfig' in matrix_item['config'] else '5',
         '--shell', 'none',
         '--warmup', '1',
     ]  # yapf: disable
