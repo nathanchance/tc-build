@@ -381,13 +381,22 @@ BASE_MAKE_VARS = {
     'KCFLAGS': '-Wno-error',
     'O': linux_build_folder,
 }
+# The kernel.org toolchains sometimes have issues with building and linking the
+# GCC plugins. They should not make a huge impact on compile time performance,
+# so disable them for the benchmarking to avoid these build errors.
+if not (allmod_config := Path(build_folder, '.allmod.config')).exists():
+    allmod_config.parent.mkdir(exist_ok=True)
+    allmod_config.write_text('CONFIG_GCC_PLUGINS=n\n', encoding='utf-8')
 for matrix_item in KERNEL_MATRIX:
     matrix_make_vars = {
         'ARCH': matrix_item['arch'],
         **BASE_MAKE_VARS,
     }
     toolchain_make_vars = [
-        {'CROSS_COMPILE': Path(GCC_INSTALL, 'bin', matrix_item['cross_compile'])},
+        {
+            'CROSS_COMPILE': Path(GCC_INSTALL, 'bin', matrix_item['cross_compile']),
+            'KCONFIG_ALLCONFIG': allmod_config,
+        },
         *[{'LLVM': f"{llvm_tc}/"} for llvm_tc in llvm_toolchains],
     ]  # yapf: disable
 
