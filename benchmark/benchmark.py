@@ -421,6 +421,7 @@ for matrix_item in KERNEL_MATRIX:
         ]
         hyperfine_cmd.append(' '.join(str(elem) for elem in make_command))
 
+    tc_build.utils.print_info(f"Benchmarking ARCH={matrix_item['arch']} {matrix_item['config']}...")
     if args.show_hyperfine_commands:
         print(f"$ {' '.join([shlex.quote(str(elem)) for elem in hyperfine_cmd])}", flush=True)
     if args.dry_run:
