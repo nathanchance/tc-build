@@ -4,6 +4,7 @@ from argparse import ArgumentParser
 import os
 from pathlib import Path
 import platform
+import re
 import shlex
 import shutil
 import subprocess
@@ -264,7 +265,9 @@ LLVM_MATRIX = [
         },
     },
 ]
-if MACHINE == 'x86_64':
+cmakelists_txt = Path(llvm_folder, 'llvm/CMakeLists.txt').read_text(encoding='utf-8')
+LLVM_VER_MAJ = int(re.search(r'set\(LLVM_VERSION_MAJOR ([0-9]+)\)', cmakelists_txt).groups()[0])
+if MACHINE == 'x86_64' or (MACHINE == 'aarch64' and LLVM_VER_MAJ >= 18):
     LLVM_MATRIX += [
         {
             'args': ['--bolt', '--pgo', 'kernel-defconfig'],
