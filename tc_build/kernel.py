@@ -82,6 +82,9 @@ class KernelBuilder(Builder):
             kconfig_allconfig = NamedTemporaryFile(dir=self.folders.build)
 
             configs_to_disable = ['DRM_WERROR', 'WERROR']
+            # https://github.com/llvm/llvm-project/issues/80185#issuecomment-2187294487
+            if self.make_variables['ARCH'] == 'hexagon' and self.toolchain_version >= (19, 0, 0):
+                configs_to_disable.append('FORTIFY_KUNIT_TEST')
             kconfig_allconfig_text = ''.join(f"CONFIG_{val}=n\n"
                                              for val in configs_to_disable).encode('utf-8')
 
