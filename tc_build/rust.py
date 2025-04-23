@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-import contextlib
 from pathlib import Path
 import subprocess
 import textwrap
 import time
 
 from tc_build.builder import Builder
+from tc_build.source import GitSourceManager
 import tc_build.utils
 
 
@@ -117,49 +117,10 @@ class RustBuilder(Builder):
         tc_build.utils.flush_std_err_out()
 
 
-class RustSourceManager:
+class RustSourceManager(GitSourceManager):
 
     def __init__(self, repo):
-        self.repo = repo
+        super().__init__(repo)
 
-    def download(self, ref):
-        if self.repo.exists():
-            return
-
-        tc_build.utils.print_header('Downloading Rust')
-
-        git_clone = ['git', 'clone', 'https://github.com/rust-lang/rust.git', self.repo]
-
-        subprocess.run(git_clone, check=True)
-
-        self.git(['checkout', ref])
-
-    def git(self, cmd, capture_output=False):
-        return subprocess.run(['git', *cmd],
-                              capture_output=capture_output,
-                              check=True,
-                              cwd=self.repo,
-                              text=True)
-
-    def git_capture(self, cmd):
-        return self.git(cmd, capture_output=True).stdout.strip()
-
-    def ref_exists(self, ref):
-        try:
-            self.git(['show-branch', ref])
-        except subprocess.CalledProcessError:
-            return False
-        return True
-
-    def update(self, ref):
-        tc_build.utils.print_header('Updating Rust')
-
-        self.git(['fetch', 'origin'])
-
-        self.git(['checkout', ref])
-
-        local_ref = None
-        with contextlib.suppress(subprocess.CalledProcessError):
-            local_ref = self.git_capture(['symbolic-ref', '-q', 'HEAD'])
-        if local_ref and local_ref.startswith('refs/heads/'):
-            self.git(['pull', '--rebase', 'origin', local_ref.replace('refs/heads/', '')])
+        self._pretty_name = 'Rust'
+        self._repo_url = 'https://github.com/rust-lang/rust.git'
