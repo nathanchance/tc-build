@@ -420,7 +420,11 @@ class LLVMSlimBuilder(LLVMBuilder):
 
         self.set_llvm_major_version()
 
-        distribution_components = []
+        distribution_components = [
+            'llvm-config',
+            'llvm-headers',
+            'llvm-libraries',
+        ]
         runtime_distribution_components = []
         if llvm_build_tools:
             distribution_components += [
