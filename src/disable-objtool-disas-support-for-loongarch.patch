@@ -1,0 +1,32 @@
+diff --git a/tools/objtool/Makefile b/tools/objtool/Makefile
+index a40f30232929..9b79f82b4461 100644
+--- a/tools/objtool/Makefile
++++ b/tools/objtool/Makefile
+@@ -3,8 +3,9 @@ include ../scripts/Makefile.include
+ include ../scripts/Makefile.arch
+ 
+ ifeq ($(SRCARCH),x86)
+-	BUILD_ORC    := y
+-	ARCH_HAS_KLP := y
++	BUILD_ORC      := y
++	ARCH_HAS_DISAS := y
++	ARCH_HAS_KLP   := y
+ endif
+ 
+ ifeq ($(SRCARCH),loongarch)
+@@ -99,6 +100,7 @@ HAVE_DISASM_STYLED := $(shell echo '$(pound)include <dis-asm.h>' | \
+ 
+ BUILD_DISAS := n
+ 
++ifeq ($(ARCH_HAS_DISAS),y)
+ ifneq ($(LIBOPCODES_LIBS),)
+ 	BUILD_DISAS := y
+ 	OBJTOOL_CFLAGS += -DDISAS -DPACKAGE='"objtool"'
+@@ -107,6 +109,7 @@ ifeq ($(HAVE_DISASM_STYLED),y)
+ 	OBJTOOL_CFLAGS += -DDISASM_INIT_STYLED
+ endif
+ endif
++endif
+ 
+ export BUILD_DISAS
+ 
