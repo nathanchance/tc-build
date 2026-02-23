@@ -1,0 +1,45 @@
+From git@z Thu Jan  1 00:00:00 1970
+Subject: [PATCH] media: rockchip: Disable VIDEO_ROCKCHIP_VDEC when compile
+ testing for Hexagon
+From: Nathan Chancellor <nathan@kernel.org>
+Date: Fri, 13 Feb 2026 15:10:06 -0500
+Message-Id: <20260213-media-disable-rockchip-vdec-hexagon-v1-1-3f903398cc83@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+Building rkvdec-vdpu383-h264.c can take a few hours to finish building
+with Clang 20.1.0 or newer when compile testing for Hexagon. While this
+is further investigated and understood on the LLVM side [1], disable
+CONFIG_VIDEO_ROCKCHIP_VDEC when compile testing for Hexagon.
+
+Link: https://github.com/llvm/llvm-project/issues/178535 [1]
+Link: https://patch.msgid.link/20260213-media-disable-rockchip-vdec-hexagon-v1-1-3f903398cc83@kernel.org
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/media/platform/rockchip/rkvdec/Kconfig | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/rockchip/rkvdec/Kconfig b/drivers/media/platform/rockchip/rkvdec/Kconfig
+index 5f3bdd848a2c..d03689464206 100644
+--- a/drivers/media/platform/rockchip/rkvdec/Kconfig
++++ b/drivers/media/platform/rockchip/rkvdec/Kconfig
+@@ -1,7 +1,8 @@
+ # SPDX-License-Identifier: GPL-2.0
+ config VIDEO_ROCKCHIP_VDEC
+ 	tristate "Rockchip Video Decoder driver"
+-	depends on ARCH_ROCKCHIP || COMPILE_TEST
++	# !HEXAGON: https://github.com/llvm/llvm-project/issues/178535
++	depends on ARCH_ROCKCHIP || (COMPILE_TEST && !HEXAGON)
+ 	depends on VIDEO_DEV
+ 	select MEDIA_CONTROLLER
+ 	select VIDEOBUF2_DMA_CONTIG
+
+---
+base-commit: c824345288d11e269ce41b36c105715bc2286050
+change-id: 20260213-media-disable-rockchip-vdec-hexagon-eb67c47292c5
+
+Best regards,
+--  
+Nathan Chancellor <nathan@kernel.org>
+
