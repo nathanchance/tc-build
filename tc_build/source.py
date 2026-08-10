@@ -102,7 +102,13 @@ class GitSourceManager:
         self._pretty_name: str = ''
         self._repo_url: str = ''
 
-    def download(self, ref: str, shallow: bool = False, configs: list[str] | None = None) -> None:
+    def download(
+        self,
+        ref: str,
+        shallow: bool = False,
+        configs: list[str] | None = None,
+        blobless: bool = False,
+    ) -> None:
         if self.repo.exists():
             return
 
@@ -113,6 +119,8 @@ class GitSourceManager:
             git_clone.append('--depth=1')
             if ref != 'main':
                 git_clone.append(f"--branch={ref}")
+        elif blobless:
+            git_clone.append('--filter=blob:none')
         if configs:
             for config in configs:
                 git_clone.append(f"--config={config}")
