@@ -102,7 +102,7 @@ class GitSourceManager:
         self._pretty_name: str = ''
         self._repo_url: str = ''
 
-    def download(self, ref: str, shallow: bool = False) -> None:
+    def download(self, ref: str, shallow: bool = False, configs: list[str] | None = None) -> None:
         if self.repo.exists():
             return
 
@@ -113,6 +113,9 @@ class GitSourceManager:
             git_clone.append('--depth=1')
             if ref != 'main':
                 git_clone.append(f"--branch={ref}")
+        if configs:
+            for config in configs:
+                git_clone.append(f"--config={config}")
         git_clone += [self._repo_url, self.repo]
 
         subprocess.run(git_clone, check=True)
