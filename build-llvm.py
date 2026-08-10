@@ -574,7 +574,9 @@ llvm_git_configs = [
     'remote.origin.fetch=^refs/heads/users/*',
     'remote.origin.fetch=^refs/heads/revert-*',
 ]
-llvm_source.download(ref=args.ref, shallow=args.shallow_clone, configs=llvm_git_configs)
+llvm_source.download(
+    ref=args.ref, shallow=args.shallow_clone, configs=llvm_git_configs, blobless=True
+)
 if not (args.llvm_folder or args.no_update):
     llvm_source.update(args.ref)
 
