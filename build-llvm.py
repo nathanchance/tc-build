@@ -569,7 +569,12 @@ if args.llvm_folder:
 else:
     llvm_folder = Path(src_folder, 'llvm-project')
 llvm_source = LLVMSourceManager(llvm_folder)
-llvm_source.download(args.ref, args.shallow_clone)
+# https://llvm.org/docs/GettingStarted.html#getting-the-source-code-and-building-llvm
+llvm_git_configs = [
+    'remote.origin.fetch=^refs/heads/users/*',
+    'remote.origin.fetch=^refs/heads/revert-*',
+]
+llvm_source.download(ref=args.ref, shallow=args.shallow_clone, configs=llvm_git_configs)
 if not (args.llvm_folder or args.no_update):
     llvm_source.update(args.ref)
 
